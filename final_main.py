@@ -232,24 +232,22 @@ def main():
     if st.session_state.collected_company_info:
         pdf_buffer = create_pdf(st.session_state.collected_company_info)
         # Şirket adını dosya adı olarak kullan
-        sanitized_company_name = st.session_state.collected_company_info['Name'].replace(' ',
-                                                                                         '_')  # Boşlukları alt çizgi ile değiştir
+        sanitized_company_name = st.session_state.collected_company_info['Name'].replace(' ', '_')  # Boşlukları alt çizgi ile değiştir
         st.download_button(
             label="PDF İndir",
             data=pdf_buffer,
-            file_name=f"{sanitized_company_name}.pdf",  # Şirket adıyla dosya ismi
-            mime="application/pdf"
+            file_name=f"{sanitized_company_name}.pdf",  # Şirket adıyla dosya adı
+            mime='application/pdf'
         )
 
     if airtable_button:
-        if not st.session_state.collected_company_info:
-            st.error("Önce şirket bilgilerini toplayın.")
-        else:
-            success = add_to_airtable(st.session_state.collected_company_info)
+        company_info = st.session_state.collected_company_info
+        if company_info:
+            success = add_to_airtable(company_info)
             if success:
-                st.success(f"{st.session_state.collected_company_info['Name']} başarıyla Airtable'a yüklendi.")
+                st.success("Bilgiler Airtable'a başarıyla yüklendi.")
             else:
-                st.error(f"{st.session_state.collected_company_info['Name']} Airtable'a yüklenirken hata oluştu.")
+                st.error("Bilgiler Airtable'a yüklenirken bir hata oluştu.")
 
 if __name__ == "__main__":
     main()
