@@ -16,9 +16,8 @@ from reportlab.lib import colors
 from reportlab.pdfbase.ttfonts import TTFont
 from reportlab.pdfbase import pdfmetrics
 from textwrap import wrap
-from webdriver_manager.chrome import ChromeDriverManager
 
-# Airtable bilgileri hesaba göre düzenlenecek.
+# Airtable bilgileri
 AIRTABLE_BASE_ID = 'appCIHUNjRGLIw3uh'
 AIRTABLE_YOUR_SECRET_API_TOKEN = 'patb6iSnO3urlCr64.edde605fb847c133eb55fbdd6907b050eb3a31198f16fecee3b781d5dd751642'
 AIRTABLE_TABLE_NAME = 'py-to-airtable'
@@ -45,7 +44,7 @@ def login_to_linkedin(driver, username, password):
 def get_company_info(driver, company_name, company_url):
     driver.get(company_url)
     WebDriverWait(driver, 20).until(lambda d: d.execute_script('return document.readyState') == 'complete')
-    time.sleep(2)  # Sayfanın tamamen yüklenmesi için ek süre
+    time.sleep(2)
 
     company_info = {
         "Name": company_name,
@@ -76,10 +75,7 @@ def get_company_info(driver, company_name, company_url):
         st.write(f"Alan bulunamadı: {e}")
 
     try:
-        # Metni bul
         founded_text = driver.find_element(By.CSS_SELECTOR, 'dl.overflow-hidden').text
-
-        # 'Founded' veya 'Kuruluş Yılı' anahtar kelimesini bul ve sonrasındaki yılı çıkar
         if "Founded" in founded_text:
             start_index = founded_text.index("Founded") + len("Founded ")
             founded_year = founded_text[start_index:start_index + 4]
@@ -94,18 +90,13 @@ def get_company_info(driver, company_name, company_url):
         st.write(f"Kuruluş yılı bulunamadı: {e}")
 
     try:
-        # Metni bul
         headquarters_text = driver.find_element(By.CSS_SELECTOR, 'dl.overflow-hidden').text
-
-        # 'Headquarters' veya 'Genel Merkez' anahtar kelimesini bul ve sonrasındaki şehri çıkar
         if "Headquarters" in headquarters_text:
             start_index = headquarters_text.index("Headquarters") + len("Headquarters ")
-            # Headquarters bilgisinin bulunduğu satırı ayır
             headquarters_city = headquarters_text[start_index:].split('\n')[0]
             company_info["Headquarters"] = headquarters_city
         elif "Genel Merkez" in headquarters_text:
             start_index = headquarters_text.index("Genel Merkez") + len("Genel Merkez ")
-            # Genel Merkez bilgisinin bulunduğu satırı ayır
             headquarters_city = headquarters_text[start_index:].split('\n')[0]
             company_info["Headquarters"] = headquarters_city
         else:
@@ -115,7 +106,6 @@ def get_company_info(driver, company_name, company_url):
 
     return company_info
 
-# Fields kısmı, Table başlıklarına özel olarak düzenlenecek.
 def add_to_airtable(company_info):
     if company_info.get("Name") is None:
         return
@@ -183,18 +173,12 @@ def create_pdf(company_info):
         c.drawString(text_x, y_position, line)
         y_position -= 15
 
-    y_position -= 10
-    c.setFillColor(colors.black)
-    c.drawString(text_x, y_position, f"Kuruluş Yılı: {company_info['Founded']}")
-    y_position -= 20
-    c.drawString(text_x, y_position, f"Merkez: {company_info['Headquarters']}")
-
     c.save()
     buffer.seek(0)
     return buffer
 
 def main():
-    st.title("LinkedIn Şirket Bilgi Toplayıcı")
+    st.title("LinkedIn Şirket Bilgileri Toplama")
 
     linkedin_username = st.text_input("LinkedIn Kullanıcı Adı")
     linkedin_password = st.text_input("LinkedIn Şifre", type="password")
@@ -212,13 +196,13 @@ def main():
     if search_button:
         if linkedin_username and linkedin_password and company_name:
             if not st.session_state.driver:
-                service = Service(ChromeDriverManager().install())
+                service = Service('/home/appuser/venv/bin/chromedriver')
                 options = Options()
                 options.headless = True
                 options.add_argument("--no-sandbox")
                 options.add_argument("--disable-dev-shm-usage")
                 driver = webdriver.Chrome(service=service, options=options)
-                driver.implicitly_wait(2)  # Bekleme süresi artırıldı
+                driver.implicitly_wait(2)
                 st.session_state.driver = driver
                 login_to_linkedin(driver, linkedin_username, linkedin_password)
 
@@ -245,12 +229,11 @@ def main():
 
     if st.session_state.collected_company_info:
         pdf_buffer = create_pdf(st.session_state.collected_company_info)
-        # Şirket adını dosya adı olarak kullan
-        sanitized_company_name = st.session_state.collected_company_info['Name'].replace(' ', '_')  # Boşlukları alt çizgi ile değiştir
+        sanitized_company_name = st.session_state.collected_company_info['Name'].replace(' ', '_')
         st.download_button(
             label="PDF İndir",
             data=pdf_buffer,
-            file_name=f"{sanitized_company_name}.pdf",  # Şirket adıyla dosya adı
+            file_name=f"{sanitized_company_name}.pdf",
             mime='application/pdf'
         )
 
