@@ -1,5 +1,5 @@
 import streamlit as st
-import os, sys
+import os
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -25,7 +25,7 @@ AIRTABLE_TABLE_NAME = 'py-to-airtable'
 
 endpoint = f'https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_TABLE_NAME}'
 
-@st.experimental_singleton
+@st.cache_resource
 def install_webdriver():
     os.system('sbase install chromedriver')
     os.system('ln -s /home/appuser/venv/lib/python3.7/site-packages/seleniumbase/drivers/chromedriver /home/appuser/venv/bin/chromedriver')
