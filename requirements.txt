@@ -2,4 +2,5 @@ streamlit
 selenium
 seleniumbase
 webdriver-manager
+requests
 reportlab
