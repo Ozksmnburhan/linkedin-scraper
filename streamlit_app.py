@@ -1,4 +1,5 @@
 import streamlit as st
+import os, sys
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -23,6 +24,13 @@ AIRTABLE_YOUR_SECRET_API_TOKEN = 'patb6iSnO3urlCr64.edde605fb847c133eb55fbdd6907
 AIRTABLE_TABLE_NAME = 'py-to-airtable'
 
 endpoint = f'https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_TABLE_NAME}'
+
+@st.experimental_singleton
+def install_webdriver():
+    os.system('sbase install chromedriver')
+    os.system('ln -s /home/appuser/venv/lib/python3.7/site-packages/seleniumbase/drivers/chromedriver /home/appuser/venv/bin/chromedriver')
+
+_ = install_webdriver()
 
 def login_to_linkedin(driver, username, password):
     driver.get('https://www.linkedin.com/login')
@@ -175,12 +183,18 @@ def create_pdf(company_info):
         c.drawString(text_x, y_position, line)
         y_position -= 15
 
+    y_position -= 10
+    c.setFillColor(colors.black)
+    c.drawString(text_x, y_position, f"Kuruluş Yılı: {company_info['Founded']}")
+    y_position -= 20
+    c.drawString(text_x, y_position, f"Merkez: {company_info['Headquarters']}")
+
     c.save()
     buffer.seek(0)
     return buffer
 
 def main():
-    st.title("LinkedIn Şirket Bilgileri Toplama")
+    st.title("LinkedIn Şirket Bilgi Toplayıcı")
 
     linkedin_username = st.text_input("LinkedIn Kullanıcı Adı")
     linkedin_password = st.text_input("LinkedIn Şifre", type="password")
