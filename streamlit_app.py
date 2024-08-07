@@ -6,6 +6,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
 import time
 import requests
 from io import BytesIO
@@ -203,7 +204,7 @@ def main():
                 options.headless = True
                 options.add_argument("--no-sandbox")
                 options.add_argument("--disable-dev-shm-usage")
-                driver = webdriver.Chrome(service=Service(ChromeDriverManager(version='114.0.5735.90').install()),options=option)
+                driver = webdriver.Chrome(service=Service(ChromeDriverManager(version='114.0.5735.90').install()), options=options)
                 driver.implicitly_wait(2)  # Bekleme süresi artırıldı
                 st.session_state.driver = driver
                 login_to_linkedin(driver, linkedin_username, linkedin_password)
