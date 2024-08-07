@@ -199,15 +199,33 @@ def main():
     if search_button:
         if linkedin_username and linkedin_password and company_name:
             if not st.session_state.driver:
-                service = Service(ChromeDriverManager().install())
-                options = Options()
-                options.headless = True
-                options.add_argument("--no-sandbox")
-                options.add_argument("--disable-dev-shm-usage")
-                driver = webdriver.Chrome(service=Service(ChromeDriverManager(version='114.0.5735.90').install()), options=options)
-                driver.implicitly_wait(2)  # Bekleme süresi artırıldı
-                st.session_state.driver = driver
-                login_to_linkedin(driver, linkedin_username, linkedin_password)
+                try:
+                    service = Service(ChromeDriverManager().install())
+                    options = Options()
+                    options.headless = True
+                    options.add_argument("--no-sandbox")
+                    options.add_argument("--disable-dev-shm-usage")
+                    driver = webdriver.Chrome(service=service, options=options)
+                    driver.implicitly_wait(2)
+                    st.session_state.driver = driver
+                    login_to_linkedin(driver, linkedin_username, linkedin_password)
+                except ValueError as e:
+                    st.error(f"ChromeDriver yüklenirken hata oluştu: {str(e)}")
+                    st.info("Manuel ChromeDriver kurulumu deneyin ve yolunu belirtin:")
+                    chromedriver_path = st.text_input("ChromeDriver yolu:")
+                    if chromedriver_path:
+                        try:
+                            service = Service(chromedriver_path)
+                            driver = webdriver.Chrome(service=service, options=options)
+                            driver.implicitly_wait(2)
+                            st.session_state.driver = driver
+                            login_to_linkedin(driver, linkedin_username, linkedin_password)
+                        except Exception as e:
+                            st.error(f"Manuel ChromeDriver kurulumunda hata: {str(e)}")
+                            return
+                except Exception as e:
+                    st.error(f"Beklenmeyen bir hata oluştu: {str(e)}")
+                    return
 
             driver = st.session_state.driver
 
@@ -232,12 +250,11 @@ def main():
 
     if st.session_state.collected_company_info:
         pdf_buffer = create_pdf(st.session_state.collected_company_info)
-        # Şirket adını dosya adı olarak kullan
-        sanitized_company_name = st.session_state.collected_company_info['Name'].replace(' ', '_')  # Boşlukları alt çizgi ile değiştir
+        sanitized_company_name = st.session_state.collected_company_info['Name'].replace(' ', '_')
         st.download_button(
             label="PDF İndir",
             data=pdf_buffer,
-            file_name=f"{sanitized_company_name}.pdf",  # Şirket adıyla dosya adı
+            file_name=f"{sanitized_company_name}.pdf",
             mime='application/pdf'
         )
 
