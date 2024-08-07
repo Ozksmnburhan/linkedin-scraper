@@ -203,7 +203,7 @@ def main():
                 options.headless = True
                 options.add_argument("--no-sandbox")
                 options.add_argument("--disable-dev-shm-usage")
-                driver = webdriver.Chrome(service=service, options=options)
+                driver = webdriver.Chrome(service=Service(ChromeDriverManager(version='114.0.5735.90').install()),options=option)
                 driver.implicitly_wait(2)  # Bekleme süresi artırıldı
                 st.session_state.driver = driver
                 login_to_linkedin(driver, linkedin_username, linkedin_password)
