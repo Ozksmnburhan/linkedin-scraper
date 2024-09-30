@@ -1,4 +1,4 @@
-import streamlit as st
+"""import streamlit as st
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -257,9 +257,9 @@ def main():
                 st.error(f"{st.session_state.collected_company_info['Name']} Airtable'a yüklenirken hata oluştu.")
 
 if __name__ == "__main__":
-    main()
+    main()"""
 
-"""import streamlit as st  # çalışan chrome driver kodu
+import streamlit as st  # çalışan chrome driver kodu
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -529,4 +529,4 @@ def main():
                 st.error("Bilgiler Airtable'a yüklenirken bir hata oluştu.")
 
 if __name__ == "__main__":
-    main()"""
+    main()
