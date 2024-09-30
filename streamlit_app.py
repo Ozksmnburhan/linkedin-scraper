@@ -461,7 +461,7 @@ def main():
         if linkedin_username and linkedin_password and company_name:
             if not st.session_state.driver:
                 try:
-                    service = Service(ChromeDriverManager("114.0.5735.90").install())#127.0.6533.99
+                    service = Service(ChromeDriverManager().install())#127.0.6533.99
                     options = Options()
                     options.headless = True
                     options.add_argument("--no-sandbox")
