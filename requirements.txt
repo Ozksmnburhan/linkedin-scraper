@@ -1,6 +1,6 @@
 streamlit
 selenium
 seleniumbase
-webdriver-manager == 129.0.6668.70
+webdriver-manager 
 requests
 reportlab
