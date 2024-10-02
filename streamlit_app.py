@@ -24,7 +24,7 @@ AIRTABLE_TABLE_NAME = 'py-to-airtable'
 endpoint = f'https://api.airtable.com/v0/{AIRTABLE_BASE_ID}/{AIRTABLE_TABLE_NAME}'
 
 # Function to install and set up `geckodriver`
-@st.experimental_singleton
+@st.cache_resource
 def install_geckodriver():
     os.system('sbase install geckodriver')
     os.system('ln -s /home/appuser/venv/lib/python3.7/site-packages/seleniumbase/drivers/geckodriver /home/appuser/venv/bin/geckodriver')
